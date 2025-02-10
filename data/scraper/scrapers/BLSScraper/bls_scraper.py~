@@ -1,0 +1,102 @@
+from typing import Dict
+
+from scrapers.scraper import Scraper
+
+
+class BLSOccupationScraper(Scraper):
+
+    def get_all_occupations(self):
+        occupations = {}
+        occ_table = self.soup.find("table", id="occfinder")
+        if occ_table:
+            for td in occ_table.find_all("tr"):
+                if not td:
+                    continue
+
+                a_tag = td.find("a")
+                if a_tag:
+                    occupation_name = a_tag.get_text(strip=True)
+                    occupation_link = f"https://www.bls.gov{a_tag['href']}" if a_tag.get("href") else "No link"
+                    if not occupation_name or not occupation_link:
+                        continue
+                    occupations[occupation_name] = occupation_link
+        return occupations
+
+    def get_facts(self):
+        quick_facts = {}
+        table = self.soup.find("table", id="quickfacts")
+        if table:
+            for row in table.find_all("tr"):
+                cols = row.find_all("th") + row.find_all("td")
+                if len(cols) == 2:
+                    key = cols[0].get_text(strip=True)
+                    value = cols[1].get_text(strip=True)
+                    quick_facts[key.strip()] = value
+        return quick_facts
+
+    def get_summary_free_text_sections(self):
+        extra_info = {}
+        for title in self.soup.find_all("h3"):
+            title_text = title.get_text().strip()
+            section = title.find_next_sibling("p")
+            if section:
+                extra_info[title.get_text().strip()] = section.get_text(strip=True)
+
+            if title_text == "Similar Occupations":
+                break
+
+        return extra_info
+
+    def get_similar_occupations(self):
+        similar_occupations = []
+        occupations_table = self.soup.find("table", id="similar-occupations")
+        if occupations_table:
+            for row in occupations_table.find_all("tr")[1:]:  # Skip header row
+                occupation = row.find_all("td")[1].get_text(strip=True)
+                similar_occupations.append(occupation)
+
+        return ','.join(similar_occupations)
+
+    def how_to_become_one_data(self):
+        become_one_data = {}
+        become_one_section = self.soup.find("div", id="tab-4")
+        columns_to_write = ["Education", "Work Experience in a Related Occupation",
+                            "Licenses, Certifications, and Registrations", "Advancement", "Important Qualities"
+                            ]
+
+        if not become_one_section:
+            return {}
+
+        headings = become_one_section.find_all(["h3", "p"])
+        for column in columns_to_write:
+            current_heading = None
+            for tag in headings:
+                if tag.name == "h3":
+                    current_heading = tag.get_text(strip=True)
+                    if column not in current_heading:
+                        continue
+
+                    become_one_data[column] = ""
+                elif tag.name == "p" and current_heading and column in current_heading:
+                    become_one_data[column] += tag.get_text(strip=True) + "\n"
+                    break
+
+            if column not in become_one_data:
+                become_one_data[column] = ""
+
+        return become_one_data
+
+    def get_occupation(self):
+        return self.url.split("/")[-1]
+
+    def run_logic(self) -> Dict:
+        facts = self.get_facts() | {"similar_occupations": self.get_similar_occupations()}
+        how_to_become_one = self.how_to_become_one_data()
+        if 'data-for-occupations-not-covered-in-detail' in self.get_occupation():
+            return {}
+
+        return {
+            "facts": facts,
+            "extra_info": self.get_summary_free_text_sections(),
+            "how_to_become_one_data": how_to_become_one
+        }

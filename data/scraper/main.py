@@ -1,0 +1,53 @@
+import os.path
+from typing import List, Dict
+
+from tqdm import tqdm
+
+from scrapers.BLSScraper.bls_scraper import BLSOccupationScraper
+from scrapers.models.occupation import Occupation
+from utils.csv.csv import save_to_csv, add_to_csv
+
+OCCUPATION_POOL_URL = 'https://www.bls.gov/ooh/occupation-finder.htm?pay=&education=&training=&newjobs=&growth=&submit=GO'
+OCCUPATIONS_URLS_CSV = 'occupations_urls.csv'
+OCCUPATIONS_FACTS_CSV = 'occupations_facts.csv'
+OCCUPATIONS_HOW_TO_BECOME_ONE_CSV = 'occupations_how_to_become_one.csv'
+
+
+def extract_occupations_urls(pool_url: str, filename: str):
+    occupation_scraper = BLSOccupationScraper()
+    occupation_scraper.load_soup_on_url(url=pool_url)
+    occupations_urls = occupation_scraper.get_all_occupations()
+    save_to_csv([{'name': key, 'url': value} for key, value in occupations_urls.items()], filename)
+    return occupations_urls
+
+
+def extract_occupations_data(urls_occupations: Dict[str, str], facts_path: str, how_to_become_one_path: str):
+    scraper = BLSOccupationScraper()
+    for occupation_name, url in tqdm(urls_occupations.items()):
+        scraper.load_soup_on_url(url=url)
+        scraper_occupation_result = scraper.run_logic()
+        if not scraper_occupation_result:
+            continue
+
+        scraper_occupation_result['name'] = occupation_name
+        occupation = Occupation(**scraper_occupation_result)
+
+        if not os.path.exists(OCCUPATIONS_FACTS_CSV):
+            save_to_csv([occupation.get_facts_dict()], facts_path)
+        else:
+            add_to_csv([occupation.get_facts_dict()], facts_path)
+        if not os.path.exists(OCCUPATIONS_HOW_TO_BECOME_ONE_CSV):
+            save_to_csv([occupation.get_how_to_become_one_dict()], how_to_become_one_path)
+        else:
+            add_to_csv([occupation.get_how_to_become_one_dict()], how_to_become_one_path)
+
+
+def main():
+    print("Extracting occupations urls...")
+    occupations_urls = extract_occupations_urls(pool_url=OCCUPATION_POOL_URL, filename=OCCUPATIONS_URLS_CSV)
+    print("Extracting occupations facts...")
+    extract_occupations_data(urls_occupations=occupations_urls, facts_path=OCCUPATIONS_FACTS_CSV, how_to_become_one_path=OCCUPATIONS_HOW_TO_BECOME_ONE_CSV)
+
+
+if __name__ == '__main__':
+    main()

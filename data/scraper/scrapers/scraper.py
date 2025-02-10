@@ -1,0 +1,26 @@
+from abc import ABC, abstractmethod
+
+import requests
+from bs4 import BeautifulSoup
+
+
+class Scraper(ABC):
+    HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+
+    def __init__(self):
+        self.response: requests.Response | None = None
+        self.soup: BeautifulSoup | None = None
+        self.url: str | None = None
+
+    def load_soup_on_url(self, url: str):
+        self.url = url
+        self.response = requests.get(url, headers=self.HEADERS)
+        if self.response.status_code != 200:
+            print(f"Failed to retrieve page: {self.response.status_code}")
+            return None
+
+        self.soup = BeautifulSoup(self.response.text, "html.parser")
+
+    @abstractmethod
+    def run_logic(self) -> dict:
+        pass

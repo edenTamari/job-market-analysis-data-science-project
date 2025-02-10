@@ -1,0 +1,38 @@
+from scraper import Scraper
+
+
+class BLSScraper(Scraper):
+    def run_logic(self) -> dict:
+        # Extract Job Summary Section
+        summary = self.soup.find("div", class_="summary-box")
+        summary_text = summary.get_text(strip=True, separator="\n") if summary else "Summary not found"
+
+        # Extract Median Pay (if available)
+        median_pay = "Not found"
+        for h2 in self.soup.find_all("h2"):
+            if "Pay" in h2.get_text():
+                pay_section = h2.find_next_sibling("p")
+                if pay_section:
+                    median_pay = pay_section.get_text(strip=True)
+                break
+
+        # Extract Job Outlook
+        job_outlook = "Not found"
+        for h2 in self.soup.find_all("h2"):
+            if "Job Outlook" in h2.get_text():
+                outlook_section = h2.find_next_sibling("p")
+                if outlook_section:
+                    job_outlook = outlook_section.get_text(strip=True)
+                break
+
+        return {
+            "Summary": summary_text,
+            "Median Pay": median_pay,
+            "Job Outlook": job_outlook
+        }
+
+
+if __name__ == '__main__':
+    scraper = BLSScraper()
+    scraper.load_soup_on_url('https://www.bls.gov/jobs/')
+    print(scraper.run_logic())
