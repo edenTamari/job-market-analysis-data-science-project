@@ -93,6 +93,6 @@ This project is computationally heavy and intended to run on systems with suffic
 
 Clone and open in Jupyter:
 ```bash
-git clone https://github.com/edenTamari/job-market-analysis.git
+git clone https://github.com/edenTamari/job-market-analysis---data-science-project.git
 cd job-market-analysis
 jupyter notebook
