@@ -4,7 +4,7 @@ This project explores the dynamic nature of the job market and provides predicti
 
 ---
 
-## 📌 Project Overview
+##  Project Overview
 
 The job market is continuously evolving due to factors such as technological advancement, demographic changes, economic shifts, and political influences. Understanding these changes is crucial for governments, organizations, academic institutions, and individuals making career decisions.
 
@@ -16,17 +16,17 @@ This project focuses on:
 
 ---
 
-## 🧠 Challenges Addressed
+##  Challenges Addressed
 
-- ⚡ Rapid market shifts due to crises (e.g., COVID-19)
-- 🧩 Incomplete and biased datasets
-- 🌍 Geographical and demographic variability
-- 🔍 Uncertainty in emerging technologies
-- 🧾 Poorly defined new job roles
+-  Rapid market shifts due to crises (e.g., COVID-19)
+-  Incomplete and biased datasets
+-  Geographical and demographic variability
+-  Uncertainty in emerging technologies
+-  Poorly defined new job roles
 
 ---
 
-## 🧰 Solutions Implemented
+##  Solutions Implemented
 
 - **Diverse data sources**: Including job boards, government surveys, and career websites
 - **Dynamic models**: Flexible ML models updated with new labor trends
@@ -37,7 +37,7 @@ This project focuses on:
 
 ---
 
-## 📦 About the Dataset
+##  About the Dataset
 
 The primary dataset used is from the **Current Population Survey (CPS)**, conducted by the **U.S. Bureau of Labor Statistics (BLS)** and the **U.S. Census Bureau**. It provides monthly statistics on employment, wages, occupations, and demographics.
 
@@ -49,11 +49,11 @@ Sources:
 
 ---
 
-## 🤖 RAG-Based Career Assistant
+##  RAG-Based Career Assistant
 
 We developed a Retrieval-Augmented Generation (RAG) system that serves as a **career recommendation assistant**. It integrates scraped career path data with an LLM to provide personalized guidance.
 
-### 🧩 RAG Pipeline Includes:
+###  RAG Pipeline Includes:
 1. **Data loading**
 2. **Chunking and embedding**
 3. **Vector storage (FAISS/Chroma)**
@@ -67,7 +67,7 @@ Capabilities:
 
 ---
 
-## 📈 Tools & Technologies
+##  Tools & Technologies
 
 - Python (Pandas, NumPy, Scikit-learn, Matplotlib, Seaborn)
 - Jupyter Notebook
@@ -78,16 +78,16 @@ Capabilities:
 
 ---
 
-## 📚 Project Goals
+##  Project Goals
 
-- 📌 Help governments plan economic strategy and retraining programs
-- 📌 Enable citizens to make better career decisions
-- 📌 Equip institutions to align education with market demand
-- 📌 Provide a modular ML pipeline for career-related insights
+-  Help governments plan economic strategy and retraining programs
+-  Enable citizens to make better career decisions
+-  Equip institutions to align education with market demand
+-  Provide a modular ML pipeline for career-related insights
 
 ---
 
-## 🧪 Getting Started
+##  Getting Started
 
 This project is computationally heavy and intended to run on systems with sufficient memory and CPU/GPU support.
 
